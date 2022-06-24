@@ -1,0 +1,22 @@
+/* Write your CSS here */
+.list-item {
+  margin: 10px;
+}
+.button {
+  height: 45px;
+  width: 105px;
+  background-color: white;
+  border: none;
+  font-size: 15px;
+  cursor: pointer;
+}
+.active-button {
+  height: 45px;
+  width: 105px;
+  color: #e73959;
+  border-radius: 20px;
+  border-width: 0px;
+  font-size: 15px;
+  font-weight: bold;
+  cursor: pointer;
+}

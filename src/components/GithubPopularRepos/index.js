@@ -1,6 +1,9 @@
 import {Component} from 'react'
+import Loader from 'react-loader-spinner'
+
 import LanguageFilterItem from '../LanguageFilterItem'
-// import RepositoryItem from '../RepositoryItem'
+
+import RepositoryItem from '../RepositoryItem'
 
 import './index.css'
 
@@ -35,53 +38,72 @@ class GithubPopularRepos extends Component {
   getActiveList = async () => {
     const {isActive} = this.state
 
-    const response = await fetch(
-      `https://apis.ccbp.in/popular-repos?language=${isActive}`,
-    )
-    const data = await response.json()
+    this.setState({apiStatus: apiStatusConstants.loading})
 
-    console.log(data)
+    const url = `https://apis.ccbp.in/popular-repos?language=${isActive}`
+    console.log(url)
+    const response = await fetch(url)
+
     console.log(response)
 
-    const rawData = data.popular_repos
+    if (response.ok) {
+      const data = await response.json()
+      const rawData = data.popular_repos
 
-    const modifiedData = rawData.map(eachItem => ({
-      name: eachItem.name,
-      id: eachItem.id,
-      issuesCount: eachItem.issues_count,
-      forksCount: eachItem.forks_count,
-      starsCount: eachItem.stars_count,
-      avatarUrl: eachItem.avatar_url,
-    }))
-    if (response.ok === true) {
+      const modifiedData = rawData.map(eachItem => ({
+        name: eachItem.name,
+        id: eachItem.id,
+        issuesCount: eachItem.issues_count,
+        forksCount: eachItem.forks_count,
+        starsCount: eachItem.stars_count,
+        avatarUrl: eachItem.avatar_url,
+      }))
       this.setState({
         listToFetch: modifiedData,
         apiStatus: apiStatusConstants.success,
       })
     } else {
-      this.setState({apiStatus: apiStatusConstants.failure}, this.dataLoad())
+      console.log('failuretriggered')
+      this.setState({apiStatus: apiStatusConstants.failure})
     }
   }
 
   changeActiveStatus = id => {
-    this.setState({isActive: `${id}`})
+    console.log(id)
+    this.setState({isActive: `${id}`}, this.getActiveList)
   }
 
   dataLoad = () => {
-    const {apiStatus} = this.state
+    const {apiStatus, listToFetch} = this.state
     switch (apiStatus) {
       case apiStatusConstants.success:
-        return <h1>Success</h1>
+        return (
+          <ul className="repositories-list">
+            {listToFetch.map(eachRepository => (
+              <RepositoryItem
+                key={eachRepository.id}
+                repositoryDetails={eachRepository}
+              />
+            ))}
+          </ul>
+        )
       case apiStatusConstants.failure:
         return <h1>failed</h1>
+      case apiStatusConstants.loading:
+        return (
+          <div testid="loader">
+            <Loader color="#0284c7" height={80} type="ThreeDots" width={80} />
+          </div>
+        )
+
       default:
-        return <h1>Loading</h1>
+        return null
     }
   }
 
   render() {
-    const {isActive} = this.state
-
+    const {isActive, listToFetch} = this.state
+    console.log(listToFetch)
     return (
       <div className="main-container">
         <h1>Popular</h1>

@@ -10,3 +10,10 @@
   flex-direction: row;
   justify-content: space-around;
 }
+.repositories-list {
+  display: flex;
+  flex-wrap: wrap;
+  list-style-type: none;
+  padding: 0px;
+  max-width: 1140px;
+}
